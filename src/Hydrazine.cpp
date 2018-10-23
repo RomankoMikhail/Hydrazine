@@ -4,6 +4,8 @@
 #include <algorithm>
 #include <cmath>
 
+#define PI 3.14159265
+
 using namespace std;
 using namespace sf;
 
@@ -15,7 +17,7 @@ float VectorLen(Vector2<T> vec) {
 template<typename T>
 Vector2<T> VectorNormilize(Vector2<T> vec) {
 	float length = VectorLen(vec);
-	if(length == 0.0f)
+	if (length == 0.0f)
 		return vec;
 	return Vector2<T>(vec.x / length, vec.y / length);
 }
@@ -27,94 +29,192 @@ T clamp(const T & value, const T & lower, const T & upper) {
 
 template<typename T>
 ostream & operator<<(ostream & stream, Vector2<T> vector) {
-	stream << vector.x << ' ' << vector.y;
+	return stream << vector.x << ' ' << vector.y;
 }
 
-template<typename T>
-class BezierCurve2 {
-public:
-	Vector2<T> p0, p1, p2;
+class BezierCurve: public sf::Drawable {
 
-	BezierCurve2() {
-		p0 = p1 = p2 = Vector2<T>(0, 0);
+	Vector2f p0, p1, p2, p3, a, b, c;
+	Vector2f v1, v2, v3;
+
+	bool mIsBuild = false;
+	float mLength = 0.0f;
+	float mT = 0.0f;
+
+public:
+	const float & getLength() const {
+		return mLength;
 	}
 
-	T length() {
-		Vector2<T> a, b;
+	const bool & isBuild() const {
+		return mIsBuild;
+	}
 
-		if(p0 == p1 || p1 == p2) {
-			return VectorLen(p0 - p2);
+	const Vector2f & getP0() const {
+		return p0;
+	}
+	const Vector2f & getP1() const {
+		return p1;
+	}
+	const Vector2f & getP2() const {
+		return p2;
+	}
+	const Vector2f & getP3() const {
+		return p3;
+	}
+
+	void build(Vector2f p0, Vector2f p1, Vector2f p2, Vector2f p3) {
+		cout << p0 << endl;
+		cout << p1 << endl;
+		cout << p2 << endl;
+		cout << p3 << endl;
+		mT = 0.0f;
+		this->p0 = p0;
+		this->p1 = p1;
+		this->p2 = p2;
+		this->p3 = p3;
+		c = 3.0f * (p1 - p0);
+		b = 3.0f * (p2 - p1) - c;
+		a = p3 - p0 - c - b;
+		mIsBuild = true;
+
+		mLength = 0;
+		for(float i = 0.001f; i <= 1.0001f; i += 0.001f)
+		{
+			mLength += VectorLen(getPoint(i) - getPoint(i - 0.001f));
+		}
+		cout << "Curve length:" << mLength << endl;
+
+		v1 = -3.0f * p0 + 9.0f * p1 - 9.0f * p2 + 3.0f * p3;
+		v2 = 6.0f * p0 - 12.0f * p1 + 6.0f * p2;
+		v3 = -3.0f * p0 + 3.0f * p1;
+	}
+
+	const float & getT() {
+		return mT;
+	}
+
+	const float & advance(float distance) {
+		mT += distance / (VectorLen(pow(mT, 2.0f) * v1 + mT * v2 + v3));
+
+		mT = clamp(mT, 0.0f, 1.0f);
+		return mT;
+	}
+
+	void append(BezierCurve otherCurve) {
+		Vector2f np0, np1, np2, np3;
+		np0 = otherCurve.getP3();
+		np1 = np0 + p1 - p0;
+		np2 = np0 + p2 - p0;
+		np3 = np0 + p3 - p0;
+		build(np0, np1, np2, np3);
+	}
+
+	void connect(BezierCurve otherCurve) {
+		Vector2f np0, np1;
+		np0 = otherCurve.getP3();
+		np1 = np0 + p1 - p0;
+		build(np0, np1, p2, p3);
+	}
+
+	void connectContinues(BezierCurve otherCurve) {
+		Vector2f np0, np1;
+		np0 = otherCurve.getP3();
+		np1 = (-(otherCurve.getP2() - np0)) + np0;
+		build(np0, np1, p2, p3);
+	}
+
+	void appendContinues(BezierCurve otherCurve) {
+		Vector2f np0, np1, np2, np3;
+		np0 = otherCurve.getP3();
+		np1 = (-(otherCurve.getP2() - np0)) + np0;
+		np2 = np0 + p2 - p0;
+		np3 = np0 + p3 - p0;
+		build(np0, np1, np2, np3);
+	}
+
+	Vector2f getPoint(const float & t) const {
+		float nt = clamp(t, 0.0f, 1.0f);
+		return a * pow(nt, 3.0f) + b * pow(nt, 2.0f) + c * nt + p0;
+	}
+
+private:
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
+			override {
+		sf::Vertex line[] = { sf::Vertex(p0), sf::Vertex(p1) };
+
+		RectangleShape box;
+		box.setSize(Vector2f(8, 8));
+		box.setFillColor(Color::Red);
+		box.setOrigin(4, 4);
+
+		line[0].color = Color::Red;
+		line[1].color = Color::Red;
+		box.setPosition(getPoint(0.0f));
+		target.draw(box);
+		for (float i = 0.1f; i <= 1.01f; i += 0.1f) {
+			line[0].position = getPoint(i - 0.1f);
+			line[1].position = getPoint(i);
+			box.setPosition(line[1].position);
+			target.draw(box);
+			target.draw(line, 2, sf::Lines);
 		}
 
-		a.x = p0.x - 2 * p1.x + p2.x;
-		a.y = p0.y - 2 * p1.y + p2.y;
-		b.x = 2 * p1.x - 2 * p0.x;
-		b.y = 2 * p1.y - 2 * p0.y;
-		float A = 4 * (a.x * a.x + a.y * a.y);
-		float B = 4 * (a.x * b.x + a.y * b.y);
-		float C = b.x * b.x + b.y * b.y;
+		box.setFillColor(Color::Green);
+		line[0].color = Color::Green;
+		line[1].color = Color::Green;
+		line[0].position = p0;
+		line[1].position = p1;
+		target.draw(line, 2, sf::Lines);
+		box.setPosition(line[1].position);
+		target.draw(box);
 
-		float Sabc = 2 * sqrt(A + B + C);
-		float A_2 = sqrt(A);
-		float A_32 = 2 * A * A_2;
-		float C_2 = 2 * sqrt(C);
-		float BA = B / A_2;
-
-		return (A_32 * Sabc + A_2 * B * (Sabc - C_2) + (4 * C * A - B * B) * log((2 * A_2 + BA + Sabc) / (BA + C_2)))
-				/ (4 * A_32);
-	}
-
-	Vector2<T> getPoint(float t) {
-		t = clamp<float>(t, 0, 1);
-		return pow(1 - t, 2) * p0 + 2 * t * (1 - t) * p1 + t * t * p2;
-	}
-
-	Vector2<T> getSpeed(float t) {
-		t = clamp<float>(t, 0, 1);
-		return 2 * (1 - t) * (p1 - p0) + 2 * t * (p2 - p1);
+		line[0].position = p3;
+		line[1].position = p2;
+		target.draw(line, 2, sf::Lines);
+		box.setPosition(line[1].position);
+		target.draw(box);
 	}
 };
 
-float sine_ease_in_out(float f) {
-	return float(0.5) * (float(1.0) - cos(f * M_PI));
-}
-
-float kP = 0.6f, kI = 0.f, kD = 0.f;
-
 class Ship {
 private:
-	Vector2f targetPosition, previousTargetPosition;
-	Vector2f currentSpeed;
-	//BezierCurve2<float> mCurve;
-	Time mElapsedTime, mTotalTime;
+	BezierCurve mCurve;
+	float mCurvePos;
+	float mSpeed;
 public:
 	Sprite mSprite;
+
 	Ship() {
-		currentSpeed = Vector2f(0, 0);
+		mCurvePos = 0;
+		mSpeed = 0;
+		//mSprite.setOrigin(24, 24);
+	}
+
+	const BezierCurve & getPathCurve() const {
+		return mCurve;
 	}
 
 	void setTargetPosition(Vector2f position, float speed) {
-		targetPosition = position;
+		mSpeed = speed;
+		if(!mCurve.isBuild() || mCurve.getT() >= 1.0f) {
+			mCurve.build(	mSprite.getPosition(),
+							mSprite.getPosition() + VectorNormilize(position - mSprite.getPosition()) * speed,
+							position + VectorNormilize(mSprite.getPosition() - position) * speed,
+							position);
+		} else {
+			mCurve.build(	mCurve.getPoint(mCurve.getT()),
+							mCurve.getPoint(mCurve.advance(speed)),
+							position + VectorNormilize(mSprite.getPosition() - position) * speed,
+							position);
+		}
 	}
 
 	void update(Time delta) {
-		Vector2f error, errorPrevious, output;
-		Vector2f integral, derivative;
-
-		errorPrevious = error;
-		error = VectorNormilize(targetPosition - mSprite.getPosition());
-		integral = integral + error * delta.asSeconds();
-		derivative = (error - errorPrevious) / delta.asSeconds();
-		output = kP * error + kI * integral + kD * derivative;
-
-		currentSpeed += (output * 0.000001f);
-		if (VectorLen(currentSpeed) > 1000.f) {
-			currentSpeed = VectorNormilize(currentSpeed) * 50.f;
+		if(mCurve.isBuild()) {
+			//mCurvePos += delta.asSeconds() / (mCurve.getLength() / mSpeed);
+			mSprite.setPosition(mCurve.getPoint(mCurve.advance(mSpeed * delta.asSeconds())));
 		}
-
-
-		mSprite.move(currentSpeed * delta.asSeconds());
-
 
 		/*float appliedSpeed = min(speed, VectorLen(mSprite.getPosition() - targetPosition));
 		 mSprite.move(VectorNormilize(targetPosition - mSprite.getPosition()) * appliedSpeed * delta.asSeconds());*/
@@ -123,6 +223,8 @@ public:
 
 int main() {
 	RenderWindow window(VideoMode(1280, 720), "Hydrazine");
+	window.setFramerateLimit(30);
+	window.setVerticalSyncEnabled(true);
 	Texture logo, ship;
 	logo.loadFromFile("images/logo.png");
 	ship.loadFromFile("images/ship.png");
@@ -131,7 +233,7 @@ int main() {
 	mship.mSprite.setTexture(ship);
 	Sprite logoSprite;
 	logoSprite.setTexture(logo);
-	//mship.setTargetPosition(Vector2f(100, 100), 15);
+	//mship.setTargetPosition(Vector2f(0, 0), 15);
 
 	Clock timer;
 
@@ -143,11 +245,13 @@ int main() {
 				window.close();
 			}
 			if (event.type == Event::MouseButtonPressed) {
-				mship.setTargetPosition(Vector2f(event.mouseButton.x, event.mouseButton.y), 50);
+				mship.setTargetPosition(
+						Vector2f(event.mouseButton.x, event.mouseButton.y), 50);
 			}
 		}
 		window.clear(Color(0x1a, 0x1a, 0x1a));
 		mship.update(timer.restart());
+		window.draw(mship.getPathCurve());
 		window.draw(mship.mSprite);
 		window.draw(logoSprite);
 		window.display();
