@@ -32,6 +32,11 @@ ostream & operator<<(ostream & stream, Vector2<T> vector) {
 	return stream << vector.x << ' ' << vector.y;
 }
 
+float sine_ease_in_out(float f) {
+	return float(0.5) * (float(1.0) - cos(f * PI));
+}
+
+
 class BezierCurve: public sf::Drawable {
 
 	Vector2f p0, p1, p2, p3, a, b, c;
@@ -182,6 +187,7 @@ private:
 	BezierCurve mCurve;
 	float mCurvePos;
 	float mSpeed;
+	Time mEllapsed;
 public:
 	Sprite mSprite;
 
@@ -197,22 +203,27 @@ public:
 
 	void setTargetPosition(Vector2f position, float speed) {
 		mSpeed = speed;
+		mEllapsed = seconds(0);
 		if(!mCurve.isBuild() || mCurve.getT() >= 1.0f) {
 			mCurve.build(	mSprite.getPosition(),
-							mSprite.getPosition() + VectorNormilize(position - mSprite.getPosition()) * speed,
-							position + VectorNormilize(mSprite.getPosition() - position) * speed,
+							mSprite.getPosition() + VectorNormilize(position - mSprite.getPosition()) * 10.f,
+							position + VectorNormilize(mSprite.getPosition() - position) * 10.f,
 							position);
 		} else {
-			mCurve.build(	mCurve.getPoint(mCurve.getT()),
-							mCurve.getPoint(mCurve.advance(speed)),
-							position + VectorNormilize(mSprite.getPosition() - position) * speed,
-							position);
+			Vector2f p1, p2, p3, p4;
+			// Fix for compiler stupidity
+			p1 = mCurve.getPoint(mCurve.getT());
+			p2 = mCurve.getPoint(mCurve.advance(speed));
+			p3 = position + VectorNormilize(mSprite.getPosition() - position) * 10.f;
+			p4 = position;
+			mCurve.build(p1, p2, p3, p4);
 		}
 	}
 
 	void update(Time delta) {
 		if(mCurve.isBuild()) {
 			//mCurvePos += delta.asSeconds() / (mCurve.getLength() / mSpeed);
+			mEllapsed += delta;
 			mSprite.setPosition(mCurve.getPoint(mCurve.advance(mSpeed * delta.asSeconds())));
 		}
 
@@ -223,7 +234,7 @@ public:
 
 int main() {
 	RenderWindow window(VideoMode(1280, 720), "Hydrazine");
-	window.setFramerateLimit(30);
+	window.setFramerateLimit(60);
 	window.setVerticalSyncEnabled(true);
 	Texture logo, ship;
 	logo.loadFromFile("images/logo.png");
@@ -231,8 +242,10 @@ int main() {
 
 	Ship mship;
 	mship.mSprite.setTexture(ship);
+	mship.mSprite.setOrigin(12, 12);
 	Sprite logoSprite;
 	logoSprite.setTexture(logo);
+	logoSprite.setColor(Color(255, 255, 255, 128));
 	//mship.setTargetPosition(Vector2f(0, 0), 15);
 
 	Clock timer;
@@ -251,7 +264,7 @@ int main() {
 		}
 		window.clear(Color(0x1a, 0x1a, 0x1a));
 		mship.update(timer.restart());
-		window.draw(mship.getPathCurve());
+		//window.draw(mship.getPathCurve());
 		window.draw(mship.mSprite);
 		window.draw(logoSprite);
 		window.display();
