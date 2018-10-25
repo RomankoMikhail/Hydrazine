@@ -13,12 +13,14 @@ If you want to create a good bug report, check if it meets the following criteri
 For version build from github sources:
 
 ```
-Bug description: Game crushes on ENTER
+**Bug description**
+Game crushes on ENTER
 
-Steps to reproduce:
+**Steps to reproduce**
  1. Launch the game
  2. Press Enter
- 
+
+**System information**
 OS: Windows 10 Pro 1803 (17134.345)
 Version: master 5ab3311
 ```
@@ -26,12 +28,14 @@ Version: master 5ab3311
 For official builds:
 
 ```
-Bug description: Game crushes on ENTER
+**Bug description**
+Game crushes on ENTER
 
-Steps to reproduce:
+**Steps to reproduce**
  1. Launch the game
  2. Press Enter
- 
+
+**System information**
 OS: Windows 10 Pro 1803 (17134.345)
 Version: 0.01a
 ```
@@ -47,10 +51,13 @@ If you want to create a good feature/enhancement request following:
 For version build from github sources:
 
 ```
-Feature description: Add support for quest tracking support
+**Feature description**
+Add support for quest tracking support
 
-Why: this will make it easier to track in-game quests
+**Why**
+This will make it easier to track in-game quests
 
+**System information**
 OS: Windows 10 Pro 1803 (17134.345)
 Version: master 5ab3311
 ```
@@ -58,10 +65,13 @@ Version: master 5ab3311
 For official builds:
 
 ```
-Feature description: Add support for quest tracking support
+**Feature description**
+Add support for quest tracking support
 
-Why: this will make it easier to track in-game quests
+**Why**
+This will make it easier to track in-game quests
 
+**System information**
 OS: Windows 10 Pro 1803 (17134.345)
 Version: 0.01a
 ```
