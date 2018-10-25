@@ -12,10 +12,6 @@ using namespace sf;
 #include "Utils.hpp"
 #include "BezierCurve.hpp"
 
-float sine_ease_in_out(float f) {
-	return float(0.5) * (float(1.0) - cos(f * PI));
-}
-
 class Ship {
 private:
 	BezierCurve mCurve;
@@ -78,7 +74,6 @@ int main() {
 	//mship.setTargetPosition(Vector2f(0, 0), 15);
 
 	Clock timer;
-
 	while (window.isOpen()) {
 
 		Event event;
