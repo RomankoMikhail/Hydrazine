@@ -11,6 +11,24 @@ using namespace sf;
 
 #include "Utils.hpp"
 #include "BezierCurve.hpp"
+#include "Easing.hpp"
+
+#include "GameStack.h"
+
+GameStack gstack;
+
+class MainState : public GameStack::State {
+	RectangleShape rect;
+	virtual void init() override {
+		rect.setFillColor(Color::Cyan);
+		rect.setSize(Vector2f(200, 400));
+	}
+
+	virtual void draw(sf::RenderTarget & target, sf::RenderStates state) const override {
+		target.draw(rect);
+	}
+public:
+};
 
 class Ship {
 private:
@@ -72,8 +90,15 @@ int main() {
 	logoSprite.setTexture(logo);
 	logoSprite.setColor(Color(255, 255, 255, 128));
 	//mship.setTargetPosition(Vector2f(0, 0), 15);
+	float t = 0;
 
+	RectangleShape s;
+	s.setSize(Vector2f(100, 200));
+	s.setFillColor(Color::Yellow);
+	s.setOrigin(50, 100);
+	s.setPosition(300, 300);
 	Clock timer;
+	gstack.push(std::shared_ptr<MainState>(new MainState(gstack)));
 	while (window.isOpen()) {
 
 		Event event;
@@ -85,12 +110,20 @@ int main() {
 				mship.setTargetPosition(
 						Vector2f(event.mouseButton.x, event.mouseButton.y), 50);
 			}
+			if (event.type == Event::KeyPressed) {
+				t = 0;
+			}
 		}
 		window.clear(Color(0x1a, 0x1a, 0x1a));
 		mship.update(timer.restart());
 		//window.draw(mship.getPathCurve());
+		t += 0.005f;
+		t = clamp(t, 0.0f, 1.0f);
+		s.setRotation(easeSineInOut(t) * 45);
+
 		window.draw(mship.mSprite);
 		window.draw(logoSprite);
+		window.draw(s);
 		window.display();
 
 	}
