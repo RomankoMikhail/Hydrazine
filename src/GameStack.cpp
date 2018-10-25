@@ -1,65 +1,77 @@
 #include "GameStack.h"
 
-void GameStack::State::init() {
-
+void GameStack::update(const sf::Time & deltaTime) {
+	for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
+		if ((*itr)->update(deltaTime) == false)
+			break;
+	}
+	applyPendingChanges();
 }
 
-GameStack::State::State(GameStack * stack) {
-	mStack = stack;
-}
-
-void GameStack::State::draw(sf::RenderTarget & target, sf::RenderStates state) const {
-	// ...
-}
-
-void GameStack::State::update(const sf::Time delta) {
-	// ...
-}
-
-const bool GameStack::State::isDrawBreak() const {
-	return true;
-}
-
-const bool GameStack::State::isUpdateBreak() const {
-	return true;
-}
-
-void GameStack::draw(sf::RenderTarget & target, sf::RenderStates state) const {
-	auto iter = mStack.rbegin();
-	for(; iter != mStack.rend(); ++iter) {
-		target.draw(**iter);
-		if((*iter)->isDrawBreak())
+void GameStack::draw() const {
+	for (auto itr = mStack.begin(); itr != mStack.end(); ++itr) {
+		if ((*itr)->draw() == false)
 			break;
 	}
 }
 
-void GameStack::update(const sf::Time delta) {
-	auto stackIter = mStack.begin();
-	for(; stackIter != mStack.end(); ++stackIter) {
-		(*stackIter)->update(delta);
-		if((*stackIter)->isUpdateBreak())
+void GameStack::handleEvent(const sf::Event & event) {
+	for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
+		if ((*itr)->handle(event) == false)
 			break;
 	}
+	applyPendingChanges();
+}
 
-	auto actionIter = mActions.begin();
-	for(; actionIter != mActions.end(); ++actionIter) {
-		if(actionIter->action == Action::POP) {
+void GameStack::pushState(const States::ID & state) {
+	mPendingList.push_back(PendingChange(Push, state));
+}
+
+void GameStack::popState() {
+	mPendingList.push_back(PendingChange(Pop));
+}
+
+void GameStack::clearStates() {
+	mPendingList.push_back(PendingChange(Clear));
+}
+
+bool GameStack::isEmpty() const {
+	return mStack.size() == 0;
+}
+
+GameState::Ptr GameStack::createState(const States::ID & state) {
+	assert(state != States::None);
+	auto found = mFactories.find(state);
+	assert(found != mFactories.end());
+
+	return found->second();
+}
+
+void GameStack::applyPendingChanges() {
+	for (PendingChange change : mPendingList) {
+		switch (change.action) {
+		case Push:
+			mStack.push_back(createState(change.stateID));
+			break;
+
+		case Pop:
 			mStack.pop_back();
-		} else {
-			mStack.push_back(actionIter->obj);
+			break;
+
+		case Clear:
+			mStack.clear();
+			break;
 		}
 	}
+
+	mPendingList.clear();
 }
 
-void GameStack::pop() {
-	Action act;
-	act.action = act.POP;
-	mActions.push_back(act);
+GameStack::GameStack(GameContext context) :
+		mContext(context) {
 }
 
-void GameStack::push(std::shared_ptr<State> state) {
-	Action act;
-	act.action = act.PUSH;
-	act.obj = state;
-	mActions.push_back(act);
+GameStack::PendingChange::PendingChange(Action action, States::ID stateID) {
+	this->stateID = stateID;
+	this->action = action;
 }

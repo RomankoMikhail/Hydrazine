@@ -1,49 +1,59 @@
 #ifndef GAMESTACK_H_
 #define GAMESTACK_H_
 
-#include <stack>
 #include <memory>
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
+#include <functional>
+#include <map>
+#include <vector>
+#include <cassert>
+#include "defs.hpp"
+#include "GameState.h"
 
-class GameStack : public sf::Drawable {
-public:
-	class State : public sf::Drawable {
-	private:
-		GameStack * mStack;
-		virtual void draw(sf::RenderTarget & target, sf::RenderStates state) const override;
-		virtual void init();
-	public:
-		virtual void update(const sf::Time delta);
-		virtual const bool isDrawBreak() const;
-		virtual const bool isUpdateBreak() const;
-
-
-		State(GameStack * stack);
-		virtual ~State() = default;
-	};
-
-	struct Action {
-		std::shared_ptr<State> obj;
-		enum {
-			PUSH,
-			POP
-		} action;
-	};
+class GameStack {
 private:
-	virtual void draw(sf::RenderTarget & target, sf::RenderStates state) const override;
+	enum Action {
+		Push, Pop, Clear
+	};
 
-	std::deque<std::shared_ptr<State>> mStack;
-	std::vector<Action> mActions;
+	struct PendingChange {
+		PendingChange(Action action, States::ID stateID = States::None);
+
+		Action action;
+		States::ID stateID;
+	};
+
 public:
+	explicit GameStack(GameContext context);
 
-	void pop();
-	void push(std::shared_ptr<State> state);
+	template<typename T>
+	void registerState(States::ID state);
 
-	virtual void update(const sf::Time delta);
+	void update(const sf::Time & deltaTime);
+	void draw() const;
+	void handleEvent(const sf::Event & event);
 
-	GameStack() = default;
-	virtual ~GameStack() = default;
+	void pushState(const States::ID & state);
+	void popState();
+	void clearStates();
+
+	bool isEmpty() const;
+private:
+
+	GameState::Ptr createState(const States::ID & state);
+	void applyPendingChanges();
+
+	std::map<States::ID, std::function<GameState::Ptr()>> mFactories;
+	GameContext mContext;
+	std::vector<GameState::Ptr> mStack;
+	std::vector<PendingChange> mPendingList;
 };
+
+template<typename T>
+void GameStack::registerState(States::ID state) {
+	mFactories[state] = [this] ()
+	{
+		return GameState::Ptr(new T(*this, mContext));
+	};
+}
 
 #endif /* GAMESTACK_H_ */
