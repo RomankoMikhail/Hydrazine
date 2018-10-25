@@ -40,7 +40,6 @@ float sine_ease_in_out(float f) {
 class BezierCurve: public sf::Drawable {
 
 	Vector2f p0, p1, p2, p3, a, b, c;
-	Vector2f v1, v2, v3;
 
 	bool mIsBuild = false;
 	float mLength = 0.0f;
@@ -69,30 +68,24 @@ public:
 	}
 
 	void build(Vector2f p0, Vector2f p1, Vector2f p2, Vector2f p3) {
-		cout << p0 << endl;
-		cout << p1 << endl;
-		cout << p2 << endl;
-		cout << p3 << endl;
 		mT = 0.0f;
+
 		this->p0 = p0;
 		this->p1 = p1;
 		this->p2 = p2;
 		this->p3 = p3;
+
 		c = 3.0f * (p1 - p0);
 		b = 3.0f * (p2 - p1) - c;
 		a = p3 - p0 - c - b;
+
 		mIsBuild = true;
 
 		mLength = 0;
-		for(float i = 0.001f; i <= 1.0001f; i += 0.001f)
+		for(float i = 0.01f; i <= 1.001f; i += 0.01f)
 		{
-			mLength += VectorLen(getPoint(i) - getPoint(i - 0.001f));
+			mLength += VectorLen(getPoint(i) - getPoint(i - 0.01f));
 		}
-		cout << "Curve length:" << mLength << endl;
-
-		v1 = -3.0f * p0 + 9.0f * p1 - 9.0f * p2 + 3.0f * p3;
-		v2 = 6.0f * p0 - 12.0f * p1 + 6.0f * p2;
-		v3 = -3.0f * p0 + 3.0f * p1;
 	}
 
 	const float & getT() {
@@ -100,9 +93,10 @@ public:
 	}
 
 	const float & advance(float distance) {
-		mT += distance / (VectorLen(pow(mT, 2.0f) * v1 + mT * v2 + v3));
-
-		mT = clamp(mT, 0.0f, 1.0f);
+		for(int i = 0; i < 50; i++) {
+			mT += (distance / 50.0f) / (VectorLen(pow(mT, 2.0f) * a * 3.0f + mT * b * 2.0f + c));
+			mT = clamp(mT, 0.0f, 1.0f);
+		}
 		return mT;
 	}
 
@@ -146,9 +140,9 @@ public:
 private:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
 			override {
-		sf::Vertex line[] = { sf::Vertex(p0), sf::Vertex(p1) };
-
+		sf::Vertex line[] = { sf::Vertex(), sf::Vertex() };
 		RectangleShape box;
+
 		box.setSize(Vector2f(8, 8));
 		box.setFillColor(Color::Red);
 		box.setOrigin(4, 4);
@@ -194,7 +188,6 @@ public:
 	Ship() {
 		mCurvePos = 0;
 		mSpeed = 0;
-		//mSprite.setOrigin(24, 24);
 	}
 
 	const BezierCurve & getPathCurve() const {
@@ -222,13 +215,9 @@ public:
 
 	void update(Time delta) {
 		if(mCurve.isBuild()) {
-			//mCurvePos += delta.asSeconds() / (mCurve.getLength() / mSpeed);
 			mEllapsed += delta;
 			mSprite.setPosition(mCurve.getPoint(mCurve.advance(mSpeed * delta.asSeconds())));
 		}
-
-		/*float appliedSpeed = min(speed, VectorLen(mSprite.getPosition() - targetPosition));
-		 mSprite.move(VectorNormilize(targetPosition - mSprite.getPosition()) * appliedSpeed * delta.asSeconds());*/
 	}
 };
 
