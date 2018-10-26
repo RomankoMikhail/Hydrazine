@@ -4,6 +4,8 @@
 #include <iostream>
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
+#include <cmath>
+#include <algorithm>
 
 template<typename T>
 float VectorLen(sf::Vector2<T> vec) {
@@ -20,7 +22,7 @@ sf::Vector2<T> VectorNormilize(sf::Vector2<T> vec) {
 
 template<typename T>
 T clamp(const T & value, const T & lower, const T & upper) {
-	return min(max(value, lower), upper);
+	return std::min(std::max(value, lower), upper);
 }
 
 template<typename T>

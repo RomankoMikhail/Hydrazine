@@ -109,7 +109,6 @@ public:
 
 private:
 
-
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
 			override {
 		sf::RectangleShape box;
@@ -123,7 +122,8 @@ private:
 		for (float i = 0.1f; i <= 1.01f; i += 0.1f) {
 			box.setPosition(getPoint(i));
 			target.draw(box);
-			drawLine(getPoint(i - 0.1f), getPoint(i), sf::Color::Red, target, states);
+			drawLine(getPoint(i - 0.1f), getPoint(i), sf::Color::Red, target,
+					states);
 		}
 
 		box.setFillColor(sf::Color::Green);

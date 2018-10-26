@@ -1,4 +1,4 @@
-#include "GameStack.h"
+#include "GameStack.hpp"
 
 void GameStack::update(const sf::Time & deltaTime) {
 	for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {

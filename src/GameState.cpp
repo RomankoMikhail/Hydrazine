@@ -1,4 +1,4 @@
-#include "GameState.h"
+#include "GameState.hpp"
 
 GameContext::GameContext(sf::RenderWindow & window) {
 	this->window = &window;

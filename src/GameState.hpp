@@ -1,5 +1,5 @@
-#ifndef GAMESTATE_H_
-#define GAMESTATE_H_
+#ifndef GAMESTATE_HPP_
+#define GAMESTATE_HPP_
 
 #include <memory>
 #include <SFML/Graphics.hpp>
@@ -32,6 +32,6 @@ private:
 	GameStack * mStack;
 };
 
-#include "GameStack.h"
+#include "GameStack.hpp"
 
-#endif /* GAMESTATE_H_ */
+#endif /* GAMESTATE_HPP_ */

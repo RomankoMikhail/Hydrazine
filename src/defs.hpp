@@ -4,7 +4,8 @@
 namespace States {
 	enum ID{
 		None,
-		Main
+		Main,
+		Sub
 	};
 }
 

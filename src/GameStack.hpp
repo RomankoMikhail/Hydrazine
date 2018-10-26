@@ -1,5 +1,5 @@
-#ifndef GAMESTACK_H_
-#define GAMESTACK_H_
+#ifndef GAMESTACK_HPP_
+#define GAMESTACK_HPP_
 
 #include <memory>
 #include <functional>
@@ -7,7 +7,7 @@
 #include <vector>
 #include <cassert>
 #include "defs.hpp"
-#include "GameState.h"
+#include "GameState.hpp"
 
 class GameStack {
 private:
@@ -56,4 +56,4 @@ void GameStack::registerState(States::ID state) {
 	};
 }
 
-#endif /* GAMESTACK_H_ */
+#endif /* GAMESTACK_HPP_ */
