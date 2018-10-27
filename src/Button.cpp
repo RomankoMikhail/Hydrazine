@@ -2,7 +2,8 @@
 
 namespace GUI {
 
-Button::Button() {
+Button::Button() : mTextAlign(Left) {
+	mFont = nullptr;
 	// TODO Auto-generated constructor stub
 }
 
