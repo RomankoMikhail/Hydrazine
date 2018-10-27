@@ -15,7 +15,7 @@ void GameStack::draw() const {
 	}
 }
 
-void GameStack::handleEvent(const sf::Event & event) {
+void GameStack::handle(const sf::Event & event) {
 	for (auto itr = mStack.rbegin(); itr != mStack.rend(); ++itr) {
 		if ((*itr)->handle(event) == false)
 			break;

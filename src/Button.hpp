@@ -1,10 +1,10 @@
-#ifndef BUTTON_H_
-#define BUTTON_H_
+#ifndef BUTTON_HPP_
+#define BUTTON_HPP_
 
-#include "Component.h"
 #include "Easing.hpp"
 #include "Utils.hpp"
 #include <functional>
+#include "Component.hpp"
 
 namespace GUI {
 
@@ -49,4 +49,4 @@ public:
 
 } /* namespace GUI */
 
-#endif /* BUTTON_H_ */
+#endif /* BUTTON_HPP_ */

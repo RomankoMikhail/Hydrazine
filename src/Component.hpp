@@ -1,5 +1,5 @@
-#ifndef COMPONENT_H_
-#define COMPONENT_H_
+#ifndef COMPONENT_HPP_
+#define COMPONENT_HPP_
 
 #include <SFML/Graphics.hpp>
 
@@ -23,4 +23,4 @@ public:
 	virtual ~Component() = default;
 };
 }
-#endif /* COMPONENT_H_ */
+#endif /* COMPONENT_HPP_ */

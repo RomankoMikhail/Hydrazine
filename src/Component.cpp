@@ -1,4 +1,4 @@
-#include "Component.h"
+#include "Component.hpp"
 namespace GUI {
 
 void Component::update(sf::Time deltaTime) {

@@ -3,7 +3,6 @@
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
-
 #include "Utils.hpp"
 
 class BezierCurve: public sf::Drawable {
@@ -36,8 +35,7 @@ public:
 		return p3;
 	}
 
-	void build(sf::Vector2f p0, sf::Vector2f p1, sf::Vector2f p2,
-			sf::Vector2f p3) {
+	void build(sf::Vector2f p0, sf::Vector2f p1, sf::Vector2f p2, sf::Vector2f p3) {
 		mT = 0.0f;
 
 		this->p0 = p0;
@@ -63,8 +61,7 @@ public:
 
 	const float & advance(float distance) {
 		for (int i = 0; i < 50; i++) {
-			mT += (distance / 50.0f)
-					/ (VectorLen(pow(mT, 2.0f) * a * 3.0f + mT * b * 2.0f + c));
+			mT += (distance / 50.0f) / (VectorLen(sf::Vector2f(pow(mT, 2.0f) * a * 3.0f + mT * b * 2.0f + c)));
 			mT = clamp(mT, 0.0f, 1.0f);
 		}
 		return mT;
@@ -109,8 +106,7 @@ public:
 
 private:
 
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
-			override {
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override {
 		sf::RectangleShape box;
 
 		box.setSize(sf::Vector2f(8, 8));
@@ -122,8 +118,7 @@ private:
 		for (float i = 0.1f; i <= 1.01f; i += 0.1f) {
 			box.setPosition(getPoint(i));
 			target.draw(box);
-			drawLine(getPoint(i - 0.1f), getPoint(i), sf::Color::Red, target,
-					states);
+			drawLine(getPoint(i - 0.1f), getPoint(i), sf::Color::Red, target, states);
 		}
 
 		box.setFillColor(sf::Color::Green);

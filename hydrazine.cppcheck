@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="1">
+    <builddir>hydrazine-cppcheck-build-dir</builddir>
+    <platform>Native</platform>
+    <analyze-all-vs-configs>true</analyze-all-vs-configs>
+    <paths>
+        <dir name="src"/>
+    </paths>
+    <libraries>
+        <library>posix</library>
+        <library>sfml</library>
+    </libraries>
+    <addons>
+        <addon>threadsafety</addon>
+        <addon>y2038</addon>
+        <addon>cert</addon>
+    </addons>
+</project>
