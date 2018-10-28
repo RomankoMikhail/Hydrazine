@@ -7,6 +7,9 @@
 #include "Button.hpp"
 #include "pugixml.hpp"
 
+#include "MainState.hpp"
+#include "ShipViewState.hpp"
+
 void printHelp() {
 	std::cout << "Hydrazine - arguments and help options" << std::endl;
 	std::cout << std::setw(8) << std::left << " -r" << "Reset all settings to default" << std::endl;
@@ -51,8 +54,9 @@ void Application::run(int argc, char ** argv) {
 		mWindow.create(sf::VideoMode(mSettings.screen.width, mSettings.screen.height), "Hydrazine", sf::Style::Default,
 				windowContext);
 
-	mStack.registerState<SettingsState>(States::Settings);
-	mStack.pushState(States::Settings);
+	mStack.registerState<MainState>(States::MainMenu);
+	mStack.registerState<ShipViewState>(States::ShipView);
+	mStack.pushState(States::MainMenu);
 
 	while (mWindow.isOpen()) {
 		sf::Time deltaTime = deltaClock.restart();
@@ -67,7 +71,7 @@ void Application::run(int argc, char ** argv) {
 			}
 		}
 
-		mWindow.clear();
+		//mWindow.clear();
 		mStack.draw();
 		mWindow.display();
 	}
@@ -82,6 +86,8 @@ Application::Application() :
 	fonts.create("default").loadFromFile("fonts/LiberationMono-Bold.ttf");
 	sounds.create("button_click").loadFromFile("sound/button_click.wav");
 	sounds.create("button_over").loadFromFile("sound/button_rollover.wav");
+	textures.create("logo").loadFromFile("images/logo.png");
+	textures.create("ship").loadFromFile("images/ship.png");
 }
 
 Application::~Application() {

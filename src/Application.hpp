@@ -7,8 +7,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include "GameStack.hpp"
+#include "MainState.hpp"
 #include "Settings.hpp"
-#include "SettingsState.hpp"
 
 class Application {
 	Settings mSettings;

@@ -4,7 +4,6 @@ namespace GUI {
 
 Button::Button() :
 		mTextAlign(Left) {
-	mFont = nullptr;
 	// TODO Auto-generated constructor stub
 }
 
@@ -82,7 +81,7 @@ void Button::handle(const sf::Event & event) {
 
 void Button::update(const sf::Time & deltaTime) {
 	mEllapsed += deltaTime;
-	float t = clamp(mEllapsed.asSeconds() / 0.25f, 0.0f, 1.0f);
+	float t = clamp(mEllapsed.asSeconds() / 0.15f, 0.0f, 1.0f);
 	float r, g, b;
 
 	r = mPrevious.r;
@@ -178,6 +177,11 @@ void Button::setSoundOver(const sf::SoundBuffer & buf) {
 
 void Button::setSoundClick(const sf::SoundBuffer & buf) {
 	mSoundClick.setBuffer(buf);
+}
+
+void Button::setVolume(const float & volume) {
+	mSoundClick.setVolume(volume);
+	mSoundOver.setVolume(volume);
 }
 
 }

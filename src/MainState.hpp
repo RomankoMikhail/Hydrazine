@@ -1,17 +1,19 @@
-#ifndef SETTINGSSTATE_HPP_
-#define SETTINGSSTATE_HPP_
+#ifndef MAINSTATE_HPP_
+#define MAINSTATE_HPP_
 
 #include "GameState.hpp"
 #include "Button.hpp"
 
-class SettingsState : public GameState {
+class MainState : public GameState {
 	GUI::Button buttonResetSettings;
+	GUI::Button buttonStartDemo;
+	void startDemo();
 public:
 	virtual bool draw() const override;
 	virtual bool update(const sf::Time & deltaTime) override;
 	virtual bool handle(const sf::Event & event) override;
 
-	SettingsState(GameStack & stack, GameContext & context);
+	MainState(GameStack & stack, GameContext & context);
 };
 
-#endif /* SETTINGSSTATE_HPP_ */
+#endif /* MAINSTATE_HPP_ */

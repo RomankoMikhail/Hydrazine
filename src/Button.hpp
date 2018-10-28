@@ -16,7 +16,6 @@ enum Align {
 class Button: public Component {
 	sf::Color mPassive, mActive, mPrevious;
 	sf::RectangleShape mShape;
-	sf::Font * mFont;
 	sf::Text mText;
 	sf::Time mEllapsed;
 	sf::Sound mSoundOver;
@@ -48,6 +47,8 @@ public:
 
 	void setSoundOver(const sf::SoundBuffer & buf);
 	void setSoundClick(const sf::SoundBuffer & buf);
+
+	void setVolume(const float & volume);
 
 	virtual void select() override;
 	virtual void deselect() override;
