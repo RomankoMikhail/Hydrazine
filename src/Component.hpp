@@ -9,7 +9,7 @@ protected:
 	bool mIsSelected = false;
 	bool mIsActive = false;
 public:
-	virtual void update(sf::Time deltaTime);
+	virtual void update(const sf::Time & deltaTime);
 	virtual bool isSelectable() const = 0;
 	virtual bool isSelected() const;
 	virtual void select();
@@ -17,7 +17,7 @@ public:
 	virtual bool isActivated() const;
 	virtual void activate();
 	virtual void deactivate();
-	virtual void handle(sf::Event & event) = 0;
+	virtual void handle(const sf::Event & event) = 0;
 
 	Component() = default;
 	virtual ~Component() = default;

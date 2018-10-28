@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
 <settings>
-	<screen width="1280" height="720" antialiasing="0" fullscreen="false" vsync="true" />
+	<screen width="1280" height="720" antialiasing="0" fullscreen="false" vsync="false" />
 </settings>

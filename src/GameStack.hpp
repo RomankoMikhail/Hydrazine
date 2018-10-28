@@ -7,6 +7,7 @@
 #include <vector>
 #include <cassert>
 #include "defs.hpp"
+
 #include "GameState.hpp"
 
 class GameStack {
@@ -55,5 +56,7 @@ void GameStack::registerState(States::ID state) {
 		return GameState::Ptr(new T(*this, mContext));
 	};
 }
+
+
 
 #endif /* GAMESTACK_HPP_ */

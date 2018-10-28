@@ -2,7 +2,8 @@
 
 namespace GUI {
 
-Button::Button() : mTextAlign(Left) {
+Button::Button() :
+		mTextAlign(Left) {
 	mFont = nullptr;
 	// TODO Auto-generated constructor stub
 }
@@ -51,21 +52,35 @@ bool Button::isSelectable() const {
 	return true;
 }
 
-void Button::handle(sf::Event & event) {
-	if (event.type == sf::Event::MouseMoved) {
-		sf::Vector2f pnt(event.mouseMove.x, event.mouseMove.y);
-		if (getTransform().transformRect(mShape.getLocalBounds()).contains(
-				pnt)) {
+void Button::handle(const sf::Event & event) {
+	sf::Vector2f point;
+
+	switch (event.type) {
+	case sf::Event::MouseMoved:
+		point.x = event.mouseMove.x;
+		point.y = event.mouseMove.y;
+		if (getTransform().transformRect(mShape.getLocalBounds()).contains(point)) {
 			select();
 		} else {
 			deselect();
 		}
+		break;
+	case sf::Event::MouseButtonPressed:
+		point.x = event.mouseButton.x;
+		point.y = event.mouseButton.y;
+		if (event.mouseButton.button == sf::Mouse::Left) {
+			if (getTransform().transformRect(mShape.getLocalBounds()).contains(point)) {
+				mSoundClick.play();
+				activate();
+			}
+		}
+		break;
+	default:
+		break;
 	}
 }
 
-//#include <iostream>
-
-void Button::update(sf::Time deltaTime) {
+void Button::update(const sf::Time & deltaTime) {
 	mEllapsed += deltaTime;
 	float t = clamp(mEllapsed.asSeconds() / 0.25f, 0.0f, 1.0f);
 	float r, g, b;
@@ -84,33 +99,27 @@ void Button::update(sf::Time deltaTime) {
 		b -= mPassive.b;
 	}
 
-	//r = clamp(r, -255.0f, 255.0f);
-	//g = clamp(g, -255.0f, 255.0f);
-	//b = clamp(b, -255.0f, 255.0f);
-
 	r *= easeCubeInOut(t);
 	g *= easeCubeInOut(t);
 	b *= easeCubeInOut(t);
 
-	//std::cout << easeCubeInOut(t) << std::endl;
-	mShape.setFillColor(
-			sf::Color(mPrevious.r - r, mPrevious.g - g, mPrevious.b - b));
+	mShape.setFillColor(sf::Color(mPrevious.r - r, mPrevious.g - g, mPrevious.b - b));
 }
 
 void Button::calcText() {
-	sf::Vector2f textLocalBounds(mText.getLocalBounds().width,
-			mText.getLocalBounds().height);
+	sf::Vector2f textLocalBounds(mText.getLocalBounds().width, mText.getLocalBounds().height);
+	sf::FloatRect textBound = mText.getLocalBounds();
+	mText.setOrigin(textBound.left + textBound.width / 2.f, textBound.top + textBound.height / 2.f);
 
 	switch (mTextAlign) {
 	case Left:
-		mText.setPosition(0, ((mShape.getSize() - textLocalBounds) * 0.5f).y);
+		mText.setPosition(textLocalBounds.x / 2.0f, mShape.getSize().y / 2.0f);
 		break;
 	case Center:
-		mText.setPosition((mShape.getSize() - textLocalBounds) * 0.5f);
+		mText.setPosition(mShape.getSize().x / 2.0f, mShape.getSize().y / 2.0f);
 		break;
 	case Right:
-		mText.setPosition(mShape.getSize().x - textLocalBounds.x,
-				((mShape.getSize() - textLocalBounds) * 0.5f).y);
+		mText.setPosition(mShape.getSize().x - textLocalBounds.x / 2.0f, mShape.getSize().y / 2.0f);
 		break;
 	}
 }
@@ -123,6 +132,7 @@ void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 void Button::select() {
 	if (!mIsSelected) {
+		mSoundOver.play();
 		mPrevious = mShape.getFillColor();
 		mEllapsed = sf::seconds(0);
 		mIsSelected = true;
@@ -134,6 +144,40 @@ void Button::deselect() {
 		mEllapsed = sf::seconds(0);
 		mIsSelected = false;
 	}
+}
+
+void Button::setCallback(std::function<void(void)> callback) {
+	mCallback = callback;
+}
+
+void Button::activate() {
+	if (mCallback)
+		mCallback();
+}
+void Button::deactivate() {
+
+}
+
+void Button::setTextColor(const sf::Color & color) {
+	mText.setFillColor(color);
+}
+
+void Button::setTextSize(const int & size) {
+	mText.setCharacterSize(size);
+	calcText();
+}
+
+void Button::setTextStyle(const unsigned & style) {
+	mText.setStyle(style);
+	calcText();
+}
+
+void Button::setSoundOver(const sf::SoundBuffer & buf) {
+	mSoundOver.setBuffer(buf);
+}
+
+void Button::setSoundClick(const sf::SoundBuffer & buf) {
+	mSoundClick.setBuffer(buf);
 }
 
 }

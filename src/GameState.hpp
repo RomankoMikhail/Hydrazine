@@ -3,13 +3,21 @@
 
 #include <memory>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "defs.hpp"
+#include "ResourceManager.hpp"
+#include "Settings.hpp"
 
 class GameStack;
 
 struct GameContext {
-	explicit GameContext(sf::RenderWindow & window);
+	explicit GameContext(Settings & setting, sf::RenderWindow & window, ResourceManager<sf::Font, sf::String> & font,
+			ResourceManager<sf::Texture, sf::String> & texture, ResourceManager<sf::SoundBuffer, sf::String> & sound);
 	sf::RenderWindow * window;
+	Settings & settings;
+	ResourceManager<sf::Font, sf::String> & fonts;
+	ResourceManager<sf::Texture, sf::String> & textures;
+	ResourceManager<sf::SoundBuffer, sf::String> & sounds;
 };
 
 class GameState {

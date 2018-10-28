@@ -5,29 +5,24 @@
 #include <string>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "GameStack.hpp"
 #include "Settings.hpp"
+#include "SettingsState.hpp"
 
 class Application {
 	Settings mSettings;
 
-	const unsigned defaultScreenWidth = 1280;
-	const unsigned defaultScreenHeight = 720;
-	const unsigned defaultScreenAntialiasing = 0;
-	const bool defaultScreenFullscreen = false;
-	const bool defaultScreenVsync = false;
-
 	sf::RenderWindow mWindow;
 	GameStack mStack;
 
+	ResourceManager<sf::Font, sf::String> fonts;
+	ResourceManager<sf::Texture, sf::String> textures;
+	ResourceManager<sf::SoundBuffer, sf::String> sounds;
 
 	void parseFlags(int argc, char ** argv);
-	bool loadSettings(const std::string & filename);
-	bool saveSettings(const std::string & filename) const;
-	void defaultSettings();
 
 public:
-
 	void run(int argc, char ** argv);
 
 	Application();

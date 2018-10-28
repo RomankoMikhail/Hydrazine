@@ -1,7 +1,7 @@
 #include "Component.hpp"
 namespace GUI {
 
-void Component::update(sf::Time deltaTime) {
+void Component::update(const sf::Time & deltaTime) {
 	return;
 }
 

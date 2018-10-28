@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
-
+#include "Button.hpp"
 #include "pugixml.hpp"
 
 void printHelp() {
@@ -18,7 +18,7 @@ void Application::parseFlags(int argc, char ** argv) {
 	while (opt != -1) {
 		switch (opt) {
 		case 'r':
-			defaultSettings();
+			mSettings.defaultSettings();
 			break;
 		case 'h':
 			printHelp();
@@ -31,57 +31,15 @@ void Application::parseFlags(int argc, char ** argv) {
 	}
 }
 
-bool Application::loadSettings(const std::string & filename) {
-	pugi::xml_document settingsXML;
 
-	if (settingsXML.load_file(filename.c_str()) == false) {
-		return false;
-	}
-
-	for (pugi::xml_node & root : settingsXML) {
-		if (root.name() == std::string("settings")) {
-			for (pugi::xml_node & settings : root) {
-				if (settings.name() == std::string("screen")) {
-					mSettings.screen.width = settings.attribute("width").as_uint(defaultScreenWidth);
-					mSettings.screen.height = settings.attribute("height").as_uint(defaultScreenHeight);
-					mSettings.screen.antialiasing = settings.attribute("antialiasing").as_uint(
-							defaultScreenAntialiasing);
-					mSettings.screen.fullscreen = settings.attribute("fullscreen").as_bool(defaultScreenFullscreen);
-					mSettings.screen.vsync = settings.attribute("vsync").as_bool(defaultScreenVsync);
-				}
-			}
-		}
-	}
-	return true;
-}
-
-bool Application::saveSettings(const std::string & filename) const {
-	pugi::xml_document settingsXML;
-	pugi::xml_node settingsNode = settingsXML.append_child("settings");
-	pugi::xml_node screenNode = settingsNode.append_child("screen");
-
-	screenNode.append_attribute("width") = mSettings.screen.width;
-	screenNode.append_attribute("height") = mSettings.screen.height;
-	screenNode.append_attribute("antialiasing") = mSettings.screen.antialiasing;
-	screenNode.append_attribute("fullscreen") = mSettings.screen.fullscreen;
-	screenNode.append_attribute("vsync") = mSettings.screen.vsync;
-
-	return settingsXML.save_file(filename.c_str());
-}
-
-void Application::defaultSettings() {
-	mSettings.screen.width = defaultScreenWidth;
-	mSettings.screen.height = defaultScreenHeight;
-	mSettings.screen.antialiasing = defaultScreenAntialiasing;
-	mSettings.screen.fullscreen = defaultScreenFullscreen;
-	mSettings.screen.vsync = defaultScreenVsync;
+void testFunc(void) {
+	std::cout << "Hello world!" << std::endl;
 }
 
 void Application::run(int argc, char ** argv) {
 	sf::Clock deltaClock;
-
 	parseFlags(argc, argv);
-	loadSettings("settings.xml");
+	mSettings.loadSettings("settings.xml");
 
 	sf::ContextSettings windowContext;
 	windowContext.antialiasingLevel = mSettings.screen.antialiasing;
@@ -92,6 +50,9 @@ void Application::run(int argc, char ** argv) {
 	else
 		mWindow.create(sf::VideoMode(mSettings.screen.width, mSettings.screen.height), "Hydrazine", sf::Style::Default,
 				windowContext);
+
+	mStack.registerState<SettingsState>(States::Settings);
+	mStack.pushState(States::Settings);
 
 	while (mWindow.isOpen()) {
 		sf::Time deltaTime = deltaClock.restart();
@@ -111,14 +72,16 @@ void Application::run(int argc, char ** argv) {
 		mWindow.display();
 	}
 
-	saveSettings("settings.xml");
+	mSettings.saveSettings("settings.xml");
 	return;
 }
 
 Application::Application() :
-		mStack(mWindow) {
-	defaultSettings();
-
+		mStack(GameContext(mSettings, mWindow, fonts, textures, sounds)) {
+	mSettings.defaultSettings();
+	fonts.create("default").loadFromFile("fonts/LiberationMono-Bold.ttf");
+	sounds.create("button_click").loadFromFile("sound/button_click.wav");
+	sounds.create("button_over").loadFromFile("sound/button_rollover.wav");
 }
 
 Application::~Application() {

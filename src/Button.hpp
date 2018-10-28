@@ -5,6 +5,7 @@
 #include "Utils.hpp"
 #include <functional>
 #include "Component.hpp"
+#include <SFML/Audio.hpp>
 
 namespace GUI {
 
@@ -18,6 +19,8 @@ class Button: public Component {
 	sf::Font * mFont;
 	sf::Text mText;
 	sf::Time mEllapsed;
+	sf::Sound mSoundOver;
+	sf::Sound mSoundClick;
 
 	Align mTextAlign;
 
@@ -30,16 +33,29 @@ public:
 	void setActiveColor(const sf::Color & color);
 	void setSize(const sf::Vector2i & size);
 	void setFont(const sf::Font & font);
-	void setText(const sf::String & text);
+
 	void setAlign(const Align & align);
+
 	void setOutlineColor(const sf::Color & color);
 	void setOutlineThickness(const float & thick);
+
+	void setText(const sf::String & text);
+	void setTextColor(const sf::Color & color);
+	void setTextSize(const int & size);
+	void setTextStyle(const unsigned & style);
+
+	void setCallback(std::function<void(void)> callback);
+
+	void setSoundOver(const sf::SoundBuffer & buf);
+	void setSoundClick(const sf::SoundBuffer & buf);
 
 	virtual void select() override;
 	virtual void deselect() override;
 	virtual bool isSelectable() const override;
-	virtual void handle(sf::Event & event) override;
-	virtual void update(sf::Time deltaTime) override;
+	virtual void activate() override;
+	virtual void deactivate() override;
+	virtual void handle(const sf::Event & event) override;
+	virtual void update(const sf::Time & deltaTime) override;
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const
 			override;
 
