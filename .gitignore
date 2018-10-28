@@ -32,3 +32,4 @@
 *.app
 /Debug/
 /hydrazine-cppcheck-build-dir/
+/Release/

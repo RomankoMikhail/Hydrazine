@@ -8,7 +8,7 @@
 class GameStack;
 
 struct GameContext {
-	GameContext(sf::RenderWindow & window);
+	explicit GameContext(sf::RenderWindow & window);
 	sf::RenderWindow * window;
 };
 
