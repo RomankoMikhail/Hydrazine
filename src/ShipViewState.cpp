@@ -29,7 +29,7 @@ void ShipViewState::shutdown() {
 
 ShipViewState::ShipViewState(GameStack & stack, GameContext & context) :
 		GameState(stack, context) {
-	mPlayerShip.setTexture(context.textures.get("ship"));
+	mPlayerShip.setTexture(context.textures.get("1_shuttle"));
 	mPlayerShip.setPosition(context.settings.screen.width / 2.0f, context.settings.screen.height / 2.0f);
 
 	mButtonExit.setText("Exit");

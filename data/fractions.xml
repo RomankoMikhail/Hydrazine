@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fractions>
+	<fraction name="Altair" id="1">Description for test fraction #1.</fraction>
+	<fraction name="Jish" id="2">Description for test fraction #2.</fraction>
+</fractions>

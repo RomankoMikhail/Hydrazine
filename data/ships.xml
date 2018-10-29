@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ships>
+	<ship id="1" type="shuttle" fraction="1" name="Alpha" health="100" path="images/fraction1/shuttle.png"/>
+	<ship id="2" type="shuttle" fraction="2" name="One" health="100" path="images/fraction2/shuttle.png"/>
+</ships>

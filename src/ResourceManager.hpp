@@ -30,7 +30,8 @@ Resource & ResourceManager<Resource, Id>::create(const Id & identifier) {
 	mMutex.lock();
 	std::unique_ptr<Resource> newElement(new Resource());
 
-	auto inserted = mResources.insert(std::make_pair(identifier, std::move(newElement)));
+	auto inserted = mResources.insert(
+			std::make_pair(identifier, std::move(newElement)));
 	if (inserted.second == false)
 		throw std::runtime_error("Can't create element in ResouceManager");
 
@@ -55,7 +56,8 @@ Resource& ResourceManager<Resource, Id>::get(const Id &identifier) {
 	mMutex.lock();
 
 	auto found = mResources.find(identifier);
-	assert(found != mResources.end());
+	if (found == mResources.end())
+		throw std::runtime_error("Can't get element in ResourceManager");
 
 	mMutex.unlock();
 	return *found->second;
@@ -63,12 +65,11 @@ Resource& ResourceManager<Resource, Id>::get(const Id &identifier) {
 
 template<class Resource, typename Id>
 const Resource& ResourceManager<Resource, Id>::get(const Id &identifier) const {
-	//mMutex.lock();
 
 	auto found = mResources.find(identifier);
-	assert(found != mResources.end());
+	if (found == mResources.end())
+		throw std::runtime_error("Can't get constant  element in ResourceManager");
 
-	//mMutex.unlock();
 	return *found->second;
 }
 

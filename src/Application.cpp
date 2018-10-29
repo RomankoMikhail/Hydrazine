@@ -12,8 +12,10 @@
 
 void printHelp() {
 	std::cout << "Hydrazine - arguments and help options" << std::endl;
-	std::cout << std::setw(8) << std::left << " -r" << "Reset all settings to default" << std::endl;
-	std::cout << std::setw(8) << std::left << " -h" << "Display this help" << std::endl;
+	std::cout << std::setw(8) << std::left << " -r"
+			<< "Reset all settings to default" << std::endl;
+	std::cout << std::setw(8) << std::left << " -h" << "Display this help"
+			<< std::endl;
 }
 
 void Application::parseFlags(int argc, char ** argv) {
@@ -47,11 +49,13 @@ void Application::run(int argc, char ** argv) {
 	windowContext.antialiasingLevel = mSettings.screen.antialiasing;
 
 	if (mSettings.screen.fullscreen)
-		mWindow.create(sf::VideoMode(mSettings.screen.width, mSettings.screen.height), "Hydrazine",
-				sf::Style::Fullscreen, windowContext);
+		mWindow.create(
+				sf::VideoMode(mSettings.screen.width, mSettings.screen.height),
+				"Hydrazine", sf::Style::Fullscreen, windowContext);
 	else
-		mWindow.create(sf::VideoMode(mSettings.screen.width, mSettings.screen.height), "Hydrazine", sf::Style::Default,
-				windowContext);
+		mWindow.create(
+				sf::VideoMode(mSettings.screen.width, mSettings.screen.height),
+				"Hydrazine", sf::Style::Default, windowContext);
 
 	mStack.registerState<MainState>(States::MainMenu);
 	mStack.registerState<ShipViewState>(States::ShipView);
@@ -90,7 +94,15 @@ Application::Application() :
 	sounds.create("button_click").loadFromFile("sound/button_click.wav");
 	sounds.create("button_over").loadFromFile("sound/button_rollover.wav");
 	textures.create("logo").loadFromFile("images/logo.png");
-	textures.create("ship").loadFromFile("images/ship.png");
+
+	textures.create("1_cargo").loadFromFile("images/fraction1/cargo.png");
+	textures.create("2_cargo").loadFromFile("images/fraction2/cargo.png");
+	textures.create("1_carrier").loadFromFile("images/fraction1/carrier.png");
+	textures.create("2_carrier").loadFromFile("images/fraction2/carrier.png");
+	textures.create("1_destroyer").loadFromFile("images/fraction1/destroyer.png");
+	textures.create("2_destroyer").loadFromFile("images/fraction2/destroyer.png");
+	textures.create("1_shuttle").loadFromFile("images/fraction1/shuttle.png");
+	textures.create("2_shuttle").loadFromFile("images/fraction2/shuttle.png");
 }
 
 Application::~Application() {
