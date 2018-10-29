@@ -34,7 +34,6 @@ void Application::parseFlags(int argc, char ** argv) {
 	}
 }
 
-
 void testFunc(void) {
 	std::cout << "Hello world!" << std::endl;
 }
@@ -74,6 +73,10 @@ void Application::run(int argc, char ** argv) {
 		//mWindow.clear();
 		mStack.draw();
 		mWindow.display();
+
+		if (mStack.isEmpty()) {
+			mWindow.close();
+		}
 	}
 
 	mSettings.saveSettings("settings.xml");

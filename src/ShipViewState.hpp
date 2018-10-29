@@ -2,8 +2,17 @@
 #define SHIPVIEWSTATE_HPP_
 
 #include "GameState.hpp"
+#include "Ship.hpp"
+#include "Button.hpp"
 
 class ShipViewState : public GameState {
+	Ship mPlayerShip;
+	GUI::Button mButtonMap;
+	GUI::Button mButtonInventory;
+	GUI::Button mButtonExit;
+
+	void shutdown();
+
 public:
 	virtual bool draw() const override;
 	virtual bool update(const sf::Time & deltaTime) override;

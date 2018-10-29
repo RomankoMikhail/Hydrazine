@@ -21,7 +21,7 @@ bool MainState::handle(const sf::Event & event) {
 }
 
 void MainState::startDemo() {
-	requestStackPop();
+	//requestStackPop();
 	requestStackPush(States::ShipView);
 }
 
